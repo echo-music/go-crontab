@@ -15,7 +15,7 @@ var EtcdConf = &EtcdConfig{
 	DialTimeout: 5 * time.Second,
 }
 
-//配置mongo
+//mongo配置初始化
 type MongoConfig struct {
 	Url string `json:"url"`
 }
