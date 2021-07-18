@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/echo-music/go-crontab/master/api"
+	"github.com/echo-music/go-crontab/master/web"
 	"log"
 	"net/http"
 	"time"
@@ -11,7 +11,7 @@ func main() {
 
 	s := &http.Server{
 		Addr:           port,
-		Handler:        api.RegisterRouter(),
+		Handler:        web.RegisterRouter(),
 		ReadTimeout:    10 * time.Second,
 		WriteTimeout:   10 * time.Second,
 	}

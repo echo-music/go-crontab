@@ -12,6 +12,7 @@ func RegisterRouter() (mux *http.ServeMux) {
 	mux.HandleFunc("/task/list", TaskList)
 	mux.HandleFunc("/task/kill", TaskKill)
 
+
 	return mux
 
 }

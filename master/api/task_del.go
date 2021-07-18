@@ -13,13 +13,14 @@ import (
 //ETCDCTL_API=3 etcdctl del  /cron/tasks/job1
 func checkTaskDelRequest(req *http.Request) (task *common.Task, err error) {
 	task = &common.Task{}
-	if req.Method != "GET" {
+	if req.Method != "POST" {
 		err = status.Error(403, "不允许"+req.Method+"请求")
 		return
 	}
-	query := req.URL.Query()
-	task.Name = query.Get("name")
-
+	if err = req.ParseForm();err !=nil{
+		return
+	}
+	task.Name = req.PostForm.Get("name")
 	if task.Name == "" {
 		err = status.Error(404, "任务名称为必填项")
 		return

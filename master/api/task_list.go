@@ -16,7 +16,7 @@ func TaskList(resp http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	reply, _ := common.BuildResponse(401,  "success",res)
+	reply, _ := common.BuildResponse(0,  "success",res)
 	_, err = resp.Write(reply)
 	return
 }
