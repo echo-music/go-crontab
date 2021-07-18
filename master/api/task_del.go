@@ -10,7 +10,7 @@ import (
 )
 
 //添加定时任务参数校验
-//ETCDCTL_API=3 etcdctl get  /cron/tasks/job1
+//ETCDCTL_API=3 etcdctl del  /cron/tasks/job1
 func checkTaskDelRequest(req *http.Request) (task *common.Task, err error) {
 	task = &common.Task{}
 	if req.Method != "GET" {
