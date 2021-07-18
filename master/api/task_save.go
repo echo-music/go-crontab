@@ -7,12 +7,27 @@ import (
 	"github.com/echo-music/go-crontab/master/logic"
 	"github.com/echo-music/go-crontab/master/model/etcd/keys"
 	"google.golang.org/grpc/status"
+	"io/ioutil"
 	"net/http"
 )
 
 //添加任务
+//ETCDCTL_API=3 etcdctl get  /cron/tasks/job1
+func checkTaskSaveRequest(req *http.Request) (task *common.Task, err error) {
+	task = &common.Task{}
+	if req.Method != "POST" {
+		err = status.Error(403, "不允许"+req.Method+"请求")
+		return
+	}
 
-func checkTaskSaveRequest(task common.Task) (err error) {
+	body, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		return
+	}
+	//参数绑定
+	if err = common.BindBody(body, task); err != nil {
+		return
+	}
 	if task.Name == "" {
 		err = status.Error(404, "任务名称为必填项")
 		return
@@ -27,30 +42,18 @@ func checkTaskSaveRequest(task common.Task) (err error) {
 	}
 	return
 }
+
+//添加定时任务
 func TaskSave(resp http.ResponseWriter, req *http.Request) {
 
 	var (
 		putRes *etcdv3.PutResponse
+		task   *common.Task
 		err    error
 	)
 
-	if req.Method != "get" {
-		reply, _ := common.BuildResponse(401, "拒绝请求", "")
-		_, err = resp.Write(reply)
-		return
-	}
-	req.GetBody
-	// 1, 解析POST表单
-	if err = req.ParseForm(); err != nil {
-		reply, _ := common.BuildResponse(401, "表单有问题", "")
-		_, err = resp.Write(reply)
-		return
-	}
-	// 2, 取表单中的job字段
-	postTask := req.PostForm.Get("job")
-	task := &common.Task{}
-	// 3, 反序列化job
-	if err = json.Unmarshal([]byte(postTask), &task); err != nil {
+	//参数绑定与校验
+	if task, err = checkTaskSaveRequest(req); err != nil {
 		reply, _ := common.BuildResponse(401, err.Error(), "")
 		_, err = resp.Write(reply)
 		return
@@ -58,16 +61,15 @@ func TaskSave(resp http.ResponseWriter, req *http.Request) {
 
 	//添加任务
 	key := keys.TASK_SAVE_DIR + task.Name
-	taskByte, err := json.Marshal(task)
+	taskByte, _ := json.Marshal(task)
 	if putRes, err = logic.TaskSave(key, string(taskByte)); err != nil {
 		reply, _ := common.BuildResponse(401, err.Error(), "")
 		_, err = resp.Write(reply)
 		return
 
-	} else {
-		reply, _ := common.BuildResponse(0, "success", putRes)
-		_, err = resp.Write(reply)
-		return
 	}
+	reply, _ := common.BuildResponse(0, "success", putRes)
+	_, err = resp.Write(reply)
+	return
 
 }
