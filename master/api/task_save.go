@@ -1,9 +1,13 @@
 package api
 
-import "net/http"
+import (
+	"github.com/echo-music/go-crontab/master/common"
+	"net/http"
+)
 
 func TaskSave(resp http.ResponseWriter, req *http.Request) {
 
-	resp.Write([]byte("hello"))
-}
+	reply, _ := common.BuildResponse(0, "success", "")
 
+	resp.Write(reply)
+}
