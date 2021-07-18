@@ -44,3 +44,7 @@ func BuildResponse(errno int, msg string, data interface{}) (resp []byte, err er
 	resp, err = json.Marshal(response)
 	return
 }
+
+func BindParams(str)  {
+
+}

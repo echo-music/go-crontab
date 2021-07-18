@@ -33,5 +33,6 @@ require (
 	go.uber.org/atomic v1.5.1 // indirect
 	golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c // indirect
 	golang.org/x/time v0.0.0-20210611083556-38a9dc6acbc6 // indirect
+	google.golang.org/grpc v1.24.0
 	sigs.k8s.io/yaml v1.2.0 // indirect
 )
