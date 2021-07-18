@@ -1,24 +1,20 @@
 package main
 
 import (
-	"fmt"
-	"github.com/echo-music/go-crontab/master/model/etcd"
-	"github.com/echo-music/go-crontab/master/model/mongo"
+	"github.com/echo-music/go-crontab/master/api"
+	"log"
+	"net/http"
+	"time"
 )
-
+var  port  = ":8080"
 func main() {
-	client :=etcd.EtcdClient()
-	fmt.Println(client)
-	client =etcd.EtcdClient()
-	fmt.Println(client)
-	client =etcd.EtcdClient()
-	fmt.Println(client)
 
-	mongoClient :=mongo.MongoClient()
-	fmt.Println(mongoClient)
-	mongoClient =mongo.MongoClient()
-	fmt.Println(mongoClient)
-	mongoClient =mongo.MongoClient()
-	fmt.Println(mongoClient)
-
+	s := &http.Server{
+		Addr:           port,
+		Handler:        api.RegisterRouter(),
+		ReadTimeout:    10 * time.Second,
+		WriteTimeout:   10 * time.Second,
+	}
+	log.Printf("listen on %s", port)
+	log.Fatal(s.ListenAndServe())
 }
