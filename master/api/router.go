@@ -8,9 +8,8 @@ func RegisterRouter() (mux *http.ServeMux) {
 	mux = http.NewServeMux()
 
 	mux.HandleFunc("/task/save", TaskSave)
-	mux.HandleFunc("/task/kill", TaskKill)
+	mux.HandleFunc("/task/del", TaskDel)
 	mux.HandleFunc("/task/list", TaskList)
-
 
 	return mux
 
