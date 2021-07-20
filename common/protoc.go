@@ -2,7 +2,9 @@ package common
 
 import (
 	"encoding/json"
+	"github.com/echo-music/go-crontab/work/model/etcd"
 	"github.com/gorhill/cronexpr"
+	"strings"
 	"time"
 )
 
@@ -46,4 +48,29 @@ func BuildResponse(errno int, msg string, data interface{}) (resp []byte, err er
 func BindBody(body []byte, target interface{}) (err error) {
 	err = json.Unmarshal(body, target)
 	return
+}
+
+// 从etcd的key中提取任务名
+// /cron/jobs/job10抹掉/cron/jobs/
+func ExtractJobName(jobKey string) string {
+	return strings.TrimPrefix(jobKey, etcd.TASK_SAVE_DIR)
+}
+
+// 从 /cron/killer/job10提取job10
+func ExtractKillerName(killerKey string) string {
+	return strings.TrimPrefix(killerKey, etcd.TASK_KILLER_DIR)
+}
+
+// 任务变化事件有2种：1）更新任务 2）删除任务
+func BuildJobEvent(eventType int, task *Task) (jobEvent *TaskEvent) {
+	return &TaskEvent{
+		EventType: eventType,
+		Task:      task,
+	}
+}
+
+// 变化事件
+type TaskEvent struct {
+	EventType int //  SAVE, DELETE
+	Task      *Task
 }
