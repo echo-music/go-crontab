@@ -3,7 +3,6 @@ package logic
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	etcdv3 "github.com/coreos/etcd/clientv3"
 	"github.com/coreos/etcd/mvcc/mvccpb"
 	"github.com/echo-music/go-crontab/common"
@@ -41,8 +40,9 @@ func Watcher() {
 			continue
 		}
 		//调度任务
-	    taskEvent :=common.BuildJobEvent(etcd.TASK_EVENT_SAVE,task)
-	    fmt.Println(taskEvent)
+		taskEvent := common.BuildJobEvent(etcd.TASK_EVENT_SAVE, task)
+		//推送事件到调度器的事件队列
+		GlobalScheduler.PushTaskEvent(taskEvent)
 
 	}
 
@@ -55,7 +55,7 @@ func Watcher() {
 		//创建监听器
 		watcher := etcdv3.NewWatcher(client)
 
-		watchChan := watcher.Watch(context.TODO(), etcd.TASK_SAVE_DIR, etcdv3.WithRev(watchCurVersion),etcdv3.WithPrefix())
+		watchChan := watcher.Watch(context.TODO(), etcd.TASK_SAVE_DIR, etcdv3.WithRev(watchCurVersion), etcdv3.WithPrefix())
 
 		for respChan := range watchChan {
 			for _, event := range respChan.Events {
@@ -67,8 +67,7 @@ func Watcher() {
 					}
 					//构建一个event事件推送给调度器
 					taskEvent := common.BuildJobEvent(etcd.TASK_EVENT_SAVE, task)
-					fmt.Println("修改为:", string(event.Kv.Value), "version", event.Kv.CreateRevision, event.Kv.ModRevision)
-					fmt.Println(taskEvent)
+					GlobalScheduler.PushTaskEvent(taskEvent)
 
 				case mvccpb.DELETE:
 					//删除任务
@@ -77,14 +76,12 @@ func Watcher() {
 						Name: taskName,
 					}
 					taskEvent := common.BuildJobEvent(etcd.TASK_EVENT_DELETE, task)
-					fmt.Println("删除:", string(event.Kv.Key), "version", event.Kv.CreateRevision, event.Kv.ModRevision)
-					fmt.Println(taskEvent)
+					GlobalScheduler.PushTaskEvent(taskEvent)
 
 				}
 			}
 		}
 
 	}()
-
 
 }

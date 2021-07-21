@@ -65,14 +65,14 @@ type Task struct {
 
 // 任务调度计划
 type TaskSchedulePlan struct {
-	Job      *Task                // 要调度的任务信息
+	Task     *Task                // 要调度的任务信息
 	Expr     *cronexpr.Expression // 解析好的cronexpr表达式
 	NextTime time.Time            // 下次调度时间
 }
 
 // 任务执行状态
 type TaskExecuteInfo struct {
-	task       *Task              // 任务信息
+	Task       *Task              // 任务信息
 	PlanTime   time.Time          // 理论上的调度时间
 	RealTime   time.Time          // 实际的调度时间
 	CancelCtx  context.Context    // 任务command的context
@@ -92,4 +92,18 @@ type JobExecuteResult struct {
 type TaskEvent struct {
 	EventType int //  SAVE, DELETE
 	Task      *Task
+}
+
+func BuildTaskSchedulePlan(task *Task) (taskSchedulePlan *TaskSchedulePlan, err error) {
+
+	var expr *cronexpr.Expression
+	if expr, err = cronexpr.Parse(task.CronExpr); err != nil {
+		return
+	}
+	taskSchedulePlan = &TaskSchedulePlan{
+		Task:     task,
+		Expr:     expr,
+		NextTime: expr.Next(time.Now()), //根据当前时间算出下一次调度时间
+	}
+	return
 }
