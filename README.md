@@ -4,27 +4,13 @@ go-crontab是使用Go语言基于etcd开发的一套分布式定时任务管理�
 
 ### 一、master模块
 
-```mermaid
-graph TD
-A[master任务管理界面] --> B(任务添加)
-A --> C[任务删除]
-A --> D[任务执行]	
-A --> E[任务]
-  
-  
-```
+![master.jpg](https://i.loli.net/2021/07/26/Ydte6msKM7CJk5Z.jpg)
+
+
 
 ### 二、worker模块
 
-```mermaid
-graph TD
-A[worker处理任务] --> B(任务监听)
-A --> C[任务调度]
-A --> D[任务执行]	
-A --> E[任务结果存储]
-  
-  
-```
+![work.jpg](https://i.loli.net/2021/07/26/FLACOyarGjQEsHc.jpg)
 
 ### 三、技术要求
 
